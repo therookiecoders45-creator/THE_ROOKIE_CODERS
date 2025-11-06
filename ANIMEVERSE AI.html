@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AnimeVerse AI — Fan Hub</title>
+<style>
+  :root{
+    --bg:#0B0F19;
+    --card:#121726;
+    --muted:#1A2033;
+    --text:#EAEAF2;
+    --sub:#B9C0D0;
+    --primary:#6C5CE7;   /* neon purple */
+    --accent:#00D1FF;    /* aqua */
+    --success:#38d39f;
+    --danger:#ff6b6b;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';}
+  a{color:var(--accent);text-decoration:none}
+  h1,h2,h3{margin:0 0 .5rem 0;letter-spacing:.5px}
+  p{color:var(--sub)}
+  .container{max-width:1100px;margin:0 auto;padding:24px}
+  /* Nav */
+  .nav{position:sticky;top:0;background:rgba(11,15,25,.8);backdrop-filter: blur(8px);z-index:10;border-bottom:1px solid #20263a}
+  .nav .row{display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+  .brand .logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--accent));display:grid;place-items:center;color:#00121a;font-weight:900}
+  .nav a{margin-left:16px;font-weight:600;opacity:.9}
+  .nav a:hover{opacity:1}
+  /* Hero */
+  .hero{padding:56px 0 32px;background:
+    radial-gradient(1200px 400px at 50% -10%, rgba(108,92,231,.25), transparent 60%),
+    radial-gradient(800px 300px at 10% 10%, rgba(0,209,255,.18), transparent 60%),
+    radial-gradient(800px 300px at 90% 10%, rgba(0,209,255,.18), transparent 60%);
+    border-bottom:1px solid #20263a;
+  }
+  .hero h1{font-size:clamp(32px,6vw,56px);font-family:"Bebas Neue", Poppins, system-ui; letter-spacing:1px}
+  .hero p{max-width:680px}
+  .chipbar{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 22px}
+  .chip{padding:8px 12px;border-radius:999px;background:#121726;border:1px solid #27304b;color:#dfe6ff;font-size:14px}
+  .cta{display:flex;gap:12px;flex-wrap:wrap}
+  .btn{padding:12px 16px;border-radius:12px;border:1px solid #2a3352;background:linear-gradient(180deg,#141a2b,#0e1424);color:#e9ecff;font-weight:700}
+  .btn.primary{background:linear-gradient(180deg, rgba(108,92,231,.9), rgba(108,92,231,.75)); border-color:#5b4fe0}
+  .btn.accent{background:linear-gradient(180deg, rgba(0,209,255,.9), rgba(0,209,255,.75)); color:#00121a; border-color:#00c2ee}
+  .btn:hover{transform:translateY(-1px);transition:150ms;filter:saturate(1.2)}
+  /* Sections */
+  section{padding:48px 0;border-bottom:1px solid #20263a}
+  .grid{display:grid;grid-template-columns: repeat(12, 1fr);gap:16px}
+  .col-4{grid-column: span 4}
+  .col-6{grid-column: span 6}
+  .col-12{grid-column: span 12}
+  @media (max-width:900px){
+    .col-4,.col-6{grid-column:span 12}
+  }
+  /* Cards */
+  .card{background:var(--card);border:1px solid #27304b;border-radius:16px;overflow:hidden}
+  .card .body{padding:16px}
+  .tag{font-size:12px;padding:4px 8px;border-radius:999px;background:#0d1326;border:1px solid #263050;color:#c9d4ff;display:inline-block}
+  .meta{font-size:13px;color:#aab3c7}
+  /* Character card */
+  .char-img{aspect-ratio: 16/9; width:100%; background:
+      repeating-linear-gradient(135deg, #0e1324 0 8px, #12182e 8px 16px);
+      position:relative; display:grid; place-items:center; color:#7aa7ff; font-weight:700
+  }
+  .char-img small{opacity:.8}
+  .stats{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+  .pill{background:#0e1324;border:1px solid #2a3763;padding:6px 10px;border-radius:999px;font-size:12px}
+  /* Suggestion box */
+  .panel{background:var(--muted);border:1px solid #2a3352;border-radius:14px;padding:16px}
+  label{font-size:14px;color:#c8d0e1}
+  select, input[type="text"]{width:100%;padding:10px;border-radius:10px;border:1px solid #2a3352;background:#0e1424;color:#e9ecff}
+  .result{padding:12px;border-radius:12px;background:#0d1326;border:1px solid #27304b;margin-top:12px}
+  /* Chat */
+  .chat{display:flex;flex-direction:column;height:380px}
+  .chatlog{flex:1;overflow:auto;background:#0e1424;border:1px solid #27304b;border-radius:12px;padding:12px}
+  .msg{margin:8px 0;padding:8px 10px;border-radius:10px;background:#131a31; border:1px solid #2a3352}
+  .msg .t{font-size:12px;color:#9fb0d6}
+  .chat-input{display:flex;gap:8px;margin-top:10px}
+  .chat-input input{flex:1}
+  .muted{color:#99a7c7;font-size:13px}
+  .rowgap{display:flex;gap:12px;flex-wrap:wrap}
+  .foot{padding:18px 0;color:#8e9ab6;font-size:13px}
+</style>
+
+<style>
+/* --- Bottom Naruto-themed Character Grid Section --- */
+#popular-extended {
+  position: relative;
+  padding: 60px 0;
+  margin-top: 0;
+  overflow: hidden;
+}
+#popular-extended::before{
+  content:"";
+  position:absolute; inset:0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.7)),
+              url('NARUTO.jpg') center/cover no-repeat;
+  filter: blur(6px) brightness(0.8);
+  transform: scale(1.05);
+  z-index: 0;
+}
+.popular-wrap { position: relative; z-index: 1; }
+.popular-grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+@media (max-width: 900px){
+  .popular-grid{ grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px){
+  .popular-grid{ grid-template-columns: 1fr; }
+}
+.char-card{
+  display: flex;
+  flex-direction: column;
+  background: #121726cc;
+  border: 1px solid #2a3352;
+  border-radius: 14px;
+  overflow: hidden;
+  text-decoration: none;
+  color: #EAEAF2;
+  box-shadow: 0 0 0 rgba(0,0,0,0);
+  transition: transform .25s ease, box-shadow .25s ease, filter .25s ease;
+}
+.char-card img{
+  width: 100%;
+  aspect-ratio: 3/2;
+  object-fit: cover;
+  display: block;
+}
+.char-card span{
+  display: block;
+  padding: 12px 14px;
+  font-weight: 700;
+  letter-spacing: .4px;
+}
+.char-card:hover{
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 0 18px var(--glow, #00D1FF);
+  filter: drop-shadow(0 0 8px var(--glow, #00D1FF));
+}
+
+/* Reveal-on-scroll */
+.reveal-section{
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.reveal-section.in-view{
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+
+</head>
+<body>
+  <!-- NAV -->
+  <div class="nav">
+    <div class="container row">
+      <div class="brand">
+        <div class="logo">AV</div>
+        <div>AnimeVerse <span style="color:var(--accent);font-weight:900">AI</span></div>
+      </div>
+      <div class="links">
+        <a href="#home">Home</a>
+        <a href="#characters">Characters</a>
+        <a href="#suggest">Find Anime</a>
+        <a href="#chat">Discussion</a>
+        <a href="#" id="loginNav">Login / Sign Up</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <header id="home" class="hero">
+    <div class="container">
+      <h1>AnimeVerse AI</h1>
+      <p>Your smart hub to explore real anime characters, get personalized anime/manga suggestions, and chat with fellow fans — all in a sleek, beginner‑friendly site.</p>
+      <div class="chipbar">
+        <span class="chip">Real Characters</span>
+        <span class="chip">Suggestion Box</span>
+        <span class="chip">Community Chat</span>
+      </div>
+      <div class="cta">
+        <a class="btn primary" href="#characters">Explore Characters</a>
+        <a class="btn accent" href="#suggest">Find My Anime</a>
+        <a class="btn" href="#chat">Join Discussion</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- CHARACTERS -->
+  <section id="characters">
+    <div class="container">
+      <h2>⭐ Popular Characters</h2>
+      <p class="muted">Tip: replace placeholders with your own images from Canva or licensed sources. Keep card texts short for best visual impact.</p>
+      <div class="grid" id="characterGrid">
+        <!-- Cards injected by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- SUGGESTION BOX -->
+  <section id="suggest">
+    <div class="container">
+      <h2>🔮 Find Your Ideal Anime / Manga</h2>
+      <p class="muted">Choose your mood and vibe — we’ll suggest a great title to start tonight.</p>
+      <div class="grid">
+        <div class="col-6">
+          <div class="panel">
+            <div class="rowgap">
+              <div style="flex:1;min-width:220px">
+                <label for="genre">Story mood</label>
+                <select id="genre">
+                  <option value="action">Action</option>
+                  <option value="romance">Romance</option>
+                  <option value="comedy">Comedy</option>
+                  <option value="mystery">Mystery</option>
+                  <option value="slice">Slice of Life</option>
+                  <option value="dark">Dark</option>
+                  <option value="fantasy">Fantasy</option>
+                  <option value="sports">Sports</option>
+                </select>
+              </div>
+              <div style="flex:1;min-width:220px">
+                <label for="vibe">Vibe</label>
+                <select id="vibe">
+                  <option value="motivational">Motivational</option>
+                  <option value="emotional">Emotional</option>
+                  <option value="chill">Chill</option>
+                  <option value="funny">Funny</option>
+                  <option value="epic">Epic</option>
+                  <option value="mindbending">Mind‑bending</option>
+                </select>
+              </div>
+            </div>
+            <div style="margin-top:12px">
+              <label for="fav">Optional: favorite element (e.g., ninjas, pirates, school, mecha)</label>
+              <input id="fav" type="text" placeholder="Type anything you like…">
+            </div>
+            <div class="cta" style="margin-top:14px">
+              <button class="btn primary" id="suggestBtn">Get Suggestion</button>
+              <button class="btn" id="clearSuggest">Clear</button>
+            </div>
+            <div class="result" id="suggestResult" style="display:none"></div>
+            <p class="muted" style="margin-top:10px">Note: Suggestions are for fun and discovery. Always support creators and watch on legal platforms.</p>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="card">
+            <div class="body">
+              <h3>How we match</h3>
+              <p>
+                We combine your chosen <b>mood</b> and <b>vibe</b> with a tiny ruleset to recommend classics or fresh picks across shōnen, seinen, shōjo, and beyond.
+              </p>
+              <ul>
+                <li>Action + Motivational → <i>Naruto</i>, <i>My Hero Academia</i></li>
+                <li>Comedy + Chill → <i>Gintama</i>, <i>Komi Can’t Communicate</i></li>
+                <li>Emotional + Slice of Life → <i>Your Lie in April</i>, <i>Clannad</i></li>
+                <li>Dark + Mystery → <i>Death Note</i>, <i>Monster</i></li>
+                <li>Epic + Adventure → <i>One Piece</i>, <i>Made in Abyss</i></li>
+                <li>Mind‑bending → <i>Steins;Gate</i>, <i>Paranoia Agent</i></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAT -->
+  <section id="chat">
+    <div class="container">
+      <h2>💬 Community Discussion</h2>
+      <p class="muted">Lightweight front‑end chat that stores messages locally on your browser (no account needed). For real‑time chat, you can later connect Firebase.</p>
+      <div class="grid">
+        <div class="col-6">
+          <div class="panel chat">
+            <div id="chatLog" class="chatlog" aria-live="polite"></div>
+            <div class="chat-input">
+              <input id="chatName" type="text" placeholder="Your name (optional)" />
+              <input id="chatMsg" type="text" placeholder="Type your message…" />
+              <button class="btn accent" id="sendBtn">Send</button>
+              <button class="btn" id="clearChat" title="Clear messages">Clear</button>
+            </div>
+            <small class="muted">Messages save in this browser only (localStorage). They won’t sync across devices.</small>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="card">
+            <div class="body">
+              <h3>Tips for a respectful chat</h3>
+              <ul>
+                <li>Be kind to fellow fans. Avoid spoilers (or tag them!).</li>
+                <li>Keep language friendly and SFW.</li>
+                <li>Share legal streaming or reading options.</li>
+              </ul>
+              <p class="muted">To enable real‑time chat later, add Firebase Realtime Database and push messages instead of localStorage.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container foot">
+    Built with ❤️ for demo purposes. Character names and series are the property of their respective creators.
+  </div>
+
+<script>
+/* --------------------------- Characters --------------------------- */
+/** Replace 'img' with your own image URLs from Canva or local files.
+ *  The placeholder shows a patterned block if no image is provided.
+ */
+const characters = [
+  {
+    name: "Naruto Uzumaki",
+    series: "Naruto",
+    img: "", // e.g., "images/naruto.jpg"
+    bio: "A determined ninja aiming to become Hokage, fueled by resilience and heart.",
+    stats: { Power: 92, Speed: 85, IQ: 70, Charm: 95 },
+    move: "Rasengan"
+  },
+  {
+    name: "Monkey D. Luffy",
+    series: "One Piece",
+    img: "",
+    bio: "A rubber-bodied pirate who seeks the One Piece and absolute freedom.",
+    stats: { Power: 94, Speed: 88, IQ: 68, Charm: 99 },
+    move: "Gum‑Gum Gatling"
+  },
+  {
+    name: "Tanjiro Kamado",
+    series: "Demon Slayer",
+    img: "",
+    bio: "A gentle yet fierce demon slayer driven by compassion and family.",
+    stats: { Power: 88, Speed: 86, IQ: 80, Charm: 92 },
+    move: "Water Breathing"
+  },
+  {
+    name: "Mikasa Ackerman",
+    series: "Attack on Titan",
+    img: "",
+    bio: "An elite soldier with unwavering loyalty and lethal precision.",
+    stats: { Power: 90, Speed: 93, IQ: 84, Charm: 75 },
+    move: "ODM Blitz"
+  },
+  {
+    name: "Gojo Satoru",
+    series: "Jujutsu Kaisen",
+    img: "",
+    bio: "A laid‑back sorcerer whose power and wit are simply unrivaled.",
+    stats: { Power: 99, Speed: 95, IQ: 90, Charm: 98 },
+    move: "Unlimited Void"
+  },
+  {
+    name: "Light Yagami",
+    series: "Death Note",
+    img: "",
+    bio: "A brilliant student who discovers a deadly notebook and a god complex.",
+    stats: { Power: 40, Speed: 60, IQ: 99, Charm: 70 },
+    move: "Keikaku (Plan)"
+  }
+];
+
+function renderCharacters(){
+  const grid = document.getElementById("characterGrid");
+  grid.innerHTML = "";
+  characters.forEach(ch => {
+    const col = document.createElement("div");
+    col.className = "col-4";
+    const card = document.createElement("div");
+    card.className = "card";
+    const img = document.createElement("div");
+    img.className = "char-img";
+    if(ch.img){
+      img.style.background = "center/cover url('"+ch.img+"'), #0e1324";
+      img.textContent = "";
+    }else{
+      img.innerHTML = "<small>Drop image URL in code → ch.img</small>";
+    }
+    const body = document.createElement("div");
+    body.className = "body";
+    const title = document.createElement("h3");
+    title.textContent = ch.name;
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    meta.textContent = ch.series;
+    const bio = document.createElement("p");
+    bio.textContent = ch.bio;
+    const stats = document.createElement("div");
+    stats.className = "stats";
+    Object.entries(ch.stats).forEach(([k,v])=>{
+      const pill = document.createElement("div");
+      pill.className = "pill";
+      pill.textContent = k + " " + v + "/100";
+      stats.appendChild(pill);
+    });
+    const move = document.createElement("div");
+    move.className = "pill";
+    move.style.background = "#0f1b34";
+    move.style.borderColor = "#3a4a7a";
+    move.textContent = "Signature: " + ch.move;
+
+    body.appendChild(title);
+    body.appendChild(meta);
+    body.appendChild(bio);
+    body.appendChild(stats);
+    body.appendChild(move);
+
+    card.appendChild(img);
+    card.appendChild(body);
+    col.appendChild(card);
+    grid.appendChild(col);
+  });
+}
+renderCharacters();
+
+
+/* ------------------------ Suggestion Engine ------------------------ */
+const rules = [
+  { genre:"action", vibe:"motivational", picks:["Naruto","My Hero Academia","Haikyuu!! (sports)"] },
+  { genre:"comedy", vibe:"chill", picks:["Gintama","Komi Can’t Communicate","Nichijou"] },
+  { genre:"slice", vibe:"emotional", picks:["Your Lie in April","Clannad: After Story","A Silent Voice (movie)"] },
+  { genre:"dark", vibe:"mystery", picks:["Death Note","Monster","Erased"] },
+  { genre:"fantasy", vibe:"epic", picks:["Fullmetal Alchemist: Brotherhood","Made in Abyss","Hunter x Hunter"] },
+  { genre:"mystery", vibe:"mindbending", picks:["Steins;Gate","Serial Experiments Lain","Paranoia Agent"] },
+  { genre:"romance", vibe:"emotional", picks:["Your Name (movie)","Fruits Basket","Toradora!"] },
+  { genre:"sports", vibe:"motivational", picks:["Haikyuu!!","Blue Lock","Kuroko’s Basketball"] },
+  { genre:"action", vibe:"epic", picks:["One Piece","Attack on Titan","Demon Slayer"] },
+  { genre:"comedy", vibe:"funny", picks:["Saiki K.","Spy×Family","KonoSuba"] },
+];
+
+function suggestAnime(genre, vibe, keyword=""){
+  // Find best rule match
+  let match = rules.find(r => r.genre===genre && r.vibe===vibe);
+  let picks = match ? [...match.picks] : ["Try: One Piece", "Try: Demon Slayer", "Try: Death Note"];
+  // Lightweight keyword nudge
+  const k = keyword.toLowerCase();
+  if(k.includes("ninja")) picks.unshift("Naruto");
+  if(k.includes("pirate")) picks.unshift("One Piece");
+  if(k.includes("school")) picks.unshift("Komi Can’t Communicate");
+  if(k.includes("mecha") || k.includes("robot")) picks.unshift("Gundam: The Witch from Mercury");
+  if(k.includes("time")) picks.unshift("Steins;Gate");
+  // unique
+  picks = [...new Set(picks)];
+  return picks.slice(0,3);
+}
+
+document.getElementById("suggestBtn").addEventListener("click", ()=>{
+  const g = document.getElementById("genre").value;
+  const v = document.getElementById("vibe").value;
+  const f = document.getElementById("fav").value;
+  const picks = suggestAnime(g,v,f);
+  const box = document.getElementById("suggestResult");
+  box.style.display = "block";
+  box.innerHTML = "<b>Suggestions:</b><br>• " + picks.join("<br>• ");
+});
+document.getElementById("clearSuggest").addEventListener("click", ()=>{
+  document.getElementById("fav").value = "";
+  document.getElementById("suggestResult").style.display = "none";
+  document.getElementById("suggestResult").innerHTML = "";
+});
+
+/* ----------------------------- Chat -------------------------------- */
+const CHAT_KEY = "animeverse_chat_v1";
+function loadChat(){
+  try{
+    const list = JSON.parse(localStorage.getItem(CHAT_KEY) || "[]");
+    const log = document.getElementById("chatLog");
+    log.innerHTML = "";
+    list.forEach(renderMsg);
+    log.scrollTop = log.scrollHeight;
+  }catch(e){console.warn(e)}
+}
+function renderMsg(m){
+  const wrap = document.createElement("div");
+  wrap.className = "msg";
+  const who = document.createElement("div");
+  who.innerHTML = "<b>"+escapeHtml(m.name || "Anon")+"</b>: " + escapeHtml(m.text);
+  const t = document.createElement("div");
+  t.className = "t";
+  const when = new Date(m.ts).toLocaleString();
+  t.textContent = when;
+  wrap.appendChild(who);
+  wrap.appendChild(t);
+  document.getElementById("chatLog").appendChild(wrap);
+}
+function escapeHtml(s){ return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+document.getElementById("sendBtn").addEventListener("click", ()=>{
+  const name = document.getElementById("chatName").value.trim() || "Anon";
+  const text = document.getElementById("chatMsg").value.trim();
+  if(!text) return;
+  const entry = {name, text, ts: Date.now()};
+  const arr = JSON.parse(localStorage.getItem(CHAT_KEY) || "[]");
+  arr.push(entry);
+  localStorage.setItem(CHAT_KEY, JSON.stringify(arr));
+  document.getElementById("chatMsg").value = "";
+  renderMsg(entry);
+  const log = document.getElementById("chatLog");
+  log.scrollTop = log.scrollHeight;
+});
+document.getElementById("clearChat").addEventListener("click", ()=>{
+  localStorage.removeItem(CHAT_KEY);
+  loadChat();
+});
+loadChat();
+
+/* --------------------------- Smooth scroll -------------------------- */
+document.querySelectorAll('.links a, .cta a').forEach(a=>{
+  a.addEventListener('click', (e)=>{
+    const href = a.getAttribute('href');
+    if(href && href.startsWith('#')){
+      e.preventDefault();
+      const el = document.querySelector(href);
+      if(el){ window.scrollTo({top: el.offsetTop-64, behavior:'smooth'}); }
+    }
+  });
+});
+</script>
+
+<!-- LOGIN / SIGNUP MODAL -->
+<div id="loginModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(5px);align-items:center;justify-content:center;z-index:999;">
+  <div style="background:#121726;padding:30px;border-radius:16px;width:350px;max-width:90%;text-align:center;position:relative;">
+    <h2 id="modalTitle" style="color:#00D1FF;margin-bottom:10px;">Login</h2>
+    <input id="modalUser" type="text" placeholder="Username" style="width:100%;margin-bottom:10px;padding:10px;border-radius:8px;border:none;background:#0e1424;color:white;">
+    <input id="modalPass" type="password" placeholder="Password" style="width:100%;margin-bottom:10px;padding:10px;border-radius:8px;border:none;background:#0e1424;color:white;">
+    <p id="confirmPassField" style="display:none;">
+      <input id="modalPassConfirm" type="password" placeholder="Confirm Password" style="width:100%;padding:10px;border-radius:8px;border:none;background:#0e1424;color:white;">
+    </p>
+    <p id="loginMsg" style="color:#ff6b6b;font-size:14px;display:none;"></p>
+    <button id="modalSubmit" class="btn primary" style="width:100%;margin-top:5px;">Login</button>
+    <p style="font-size:14px;color:#9aa3c8;margin-top:10px;">
+      <span id="switchText">Don't have an account?</span>
+      <a href="#" id="toggleMode" style="color:#00D1FF;">Sign Up</a>
+    </p>
+    <button id="closeModal" style="position:absolute;top:10px;right:15px;background:none;border:none;color:white;font-size:18px;cursor:pointer;">✖</button>
+  </div>
+</div>
+
+
+<script>
+/* ---------------- LOGIN / SIGNUP SYSTEM ---------------- */
+const loginNav = document.getElementById('loginNav');
+const modal = document.getElementById('loginModal');
+const closeModal = document.getElementById('closeModal');
+const modalTitle = document.getElementById('modalTitle');
+const modalSubmit = document.getElementById('modalSubmit');
+const toggleMode = document.getElementById('toggleMode');
+const switchText = document.getElementById('switchText');
+const confirmField = document.getElementById('confirmPassField');
+const loginMsg = document.getElementById('loginMsg');
+
+let isSignup = false;
+
+// Seed default users if not exist
+function seedUsers() {
+  if (!localStorage.getItem('animeverse_users')) {
+    const defaultUsers = [
+      { username: 'admin', password: '1234' },
+      { username: 'user1', password: 'animefan' },
+      { username: 'gojo', password: 'limitless' }
+    ];
+    localStorage.setItem('animeverse_users', JSON.stringify(defaultUsers));
+  }
+}
+seedUsers();
+
+function getUsers() {
+  return JSON.parse(localStorage.getItem('animeverse_users') || '[]');
+}
+
+function saveUsers(users) {
+  localStorage.setItem('animeverse_users', JSON.stringify(users));
+}
+
+function getLoggedUser() {
+  return JSON.parse(localStorage.getItem('animeverse_logged_user') || 'null');
+}
+
+function setLoggedUser(user) {
+  localStorage.setItem('animeverse_logged_user', JSON.stringify(user));
+}
+
+function logout() {
+  localStorage.removeItem('animeverse_logged_user');
+  location.reload();
+}
+
+// Navbar dynamic user display
+function updateNavbar() {
+  const user = getLoggedUser();
+  if (user) {
+    loginNav.outerHTML = '<div id="userMenu" style="position:relative;display:inline-block;">' +
+      '<a href="#" id="userBtn">Hi, ' + user.username + ' ▼</a>' +
+      '<div id="dropdown" style="display:none;position:absolute;right:0;background:#121726;border:1px solid #27304b;border-radius:8px;padding:8px;">' +
+      '<a href="#" id="logoutLink" style="color:#ff6b6b;text-decoration:none;">Logout</a>' +
+      '</div></div>';
+
+    const userBtn = document.getElementById('userBtn');
+    const dropdown = document.getElementById('dropdown');
+    userBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    });
+    document.getElementById('logoutLink').addEventListener('click', logout);
+  }
+}
+
+// Toggle modal
+loginNav?.addEventListener('click', (e) => {
+  e.preventDefault();
+  modal.style.display = 'flex';
+});
+
+closeModal.addEventListener('click', () => modal.style.display = 'none');
+
+// Switch login/signup mode
+toggleMode.addEventListener('click', (e) => {
+  e.preventDefault();
+  isSignup = !isSignup;
+  modalTitle.textContent = isSignup ? 'Sign Up' : 'Login';
+  modalSubmit.textContent = isSignup ? 'Create Account' : 'Login';
+  switchText.textContent = isSignup ? 'Already have an account?' : "Don't have an account?";
+  toggleMode.textContent = isSignup ? 'Login' : 'Sign Up';
+  confirmField.style.display = isSignup ? 'block' : 'none';
+  loginMsg.style.display = 'none';
+});
+
+// Handle login/signup submit
+modalSubmit.addEventListener('click', () => {
+  const user = document.getElementById('modalUser').value.trim();
+  const pass = document.getElementById('modalPass').value.trim();
+  const confirmPass = document.getElementById('modalPassConfirm')?.value.trim();
+  loginMsg.style.display = 'none';
+
+  if (!user || !pass) {
+    loginMsg.textContent = 'Please fill all fields.';
+    loginMsg.style.display = 'block';
+    return;
+  }
+
+  let users = getUsers();
+
+  if (isSignup) {
+    if (users.find(u => u.username === user)) {
+      loginMsg.textContent = 'Username already exists!';
+      loginMsg.style.display = 'block';
+      return;
+    }
+    if (pass !== confirmPass) {
+      loginMsg.textContent = 'Passwords do not match!';
+      loginMsg.style.display = 'block';
+      return;
+    }
+    users.push({ username: user, password: pass });
+    saveUsers(users);
+    setLoggedUser({ username: user });
+    modal.style.display = 'none';
+    updateNavbar();
+  } else {
+    const found = users.find(u => u.username === user && u.password === pass);
+    if (found) {
+      setLoggedUser({ username: found.username });
+      modal.style.display = 'none';
+      updateNavbar();
+    } else {
+      loginMsg.textContent = 'Invalid username or password.';
+      loginMsg.style.display = 'block';
+    }
+  }
+});
+
+window.addEventListener('click', (e) => {
+  if (e.target === modal) modal.style.display = 'none';
+});
+
+updateNavbar();
+</script>
+
+
+<!-- POPULAR CHARACTERS — EXTENDED (BOTTOM OF PAGE) -->
+<section id="popular-extended" class="reveal-section">
+  <div class="container popular-wrap">
+    <div class="popular-grid">
+      <a class="char-card" style="--glow:#FFA500" href="naruto.html">
+        <img src="NARUTO.jpg" alt="Naruto Uzumaki">
+        <span>Naruto Uzumaki</span>
+      </a>
+      <a class="char-card" style="--glow:#FF4B4B" href="mikasa.html">
+        <img src="MIKASA.jpg" alt="Mikasa Ackerman">
+        <span>Mikasa Ackerman</span>
+      </a>
+      <a class="char-card" style="--glow:#00BFFF" href="gojo.html">
+        <img src="GOJO SATAROU.jpg" alt="Gojo Satoru">
+        <span>Gojo Satoru</span>
+      </a>
+      <a class="char-card" style="--glow:#FFD700" href="light.html">
+        <img src="LIGHT YAGAMI.jpg" alt="Light Yagami">
+        <span>Light Yagami</span>
+      </a>
+      <a class="char-card" style="--glow:#A00000" href="luffy.html">
+        <img src="MONKEY D LUFFY.jpg" alt="Monkey D. Luffy">
+        <span>Monkey D. Luffy</span>
+      </a>
+      <a class="char-card" style="--glow:#00FFAA" href="tanjiro.html">
+        <img src="TANJIRO.jpg" alt="Tanjiro Kamado">
+        <span>Tanjiro Kamado</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+<script>
+// Reveal-on-scroll observer
+(function(){
+  const el = document.getElementById('popular-extended');
+  if(!('IntersectionObserver' in window) || !el){ 
+    el && el.classList.add('in-view');
+    return;
+  }
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        el.classList.add('in-view');
+        io.disconnect();
+      }
+    });
+  }, { threshold: 0.2 });
+  io.observe(el);
+})();
+</script>
+
+</body>
+</html>
